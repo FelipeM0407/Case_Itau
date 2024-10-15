@@ -27,7 +27,6 @@ namespace CaseItau.API.Tests.ControllersTests
             _loggerMock = new Mock<ILogger<FundoUseCase>>();
             _mapperMock = new Mock<IMapper>();
 
-            // Passando o _mapperMock.Object ao invés de null
             var fundoUseCase = new FundoUseCase(_fundoRepositoryMock.Object, _mapperMock.Object, _loggerMock.Object);
             _fundoController = new FundoController(fundoUseCase);
         }
@@ -44,7 +43,6 @@ namespace CaseItau.API.Tests.ControllersTests
 
             _fundoRepositoryMock.Setup(repo => repo.GetAllAsync()).ReturnsAsync(fundos);
 
-            // Mapeamento manual de Fundo para FundoDTO
             var fundosDto = new List<FundoDTO>
             {
                 new FundoDTO { Codigo = "001", Nome = "Fundo 1", Cnpj = "12345678901234", Codigo_Tipo = 1, Patrimonio = 1000 },
@@ -70,7 +68,6 @@ namespace CaseItau.API.Tests.ControllersTests
 
             _fundoRepositoryMock.Setup(repo => repo.GetByCodigoAsync("001")).ReturnsAsync(fundo);
 
-            // Mapeamento manual de Fundo para FundoDTO
             var fundoDto = new FundoDTO
             {
                 Codigo = fundo.Codigo,
@@ -113,7 +110,6 @@ namespace CaseItau.API.Tests.ControllersTests
             _fundoRepositoryMock.Setup(repo => repo.GetByCodigoAsync(fundoDto.Codigo)).ReturnsAsync((Fundo)null);
             _fundoRepositoryMock.Setup(repo => repo.CreateFundoAsync(It.IsAny<Fundo>())).Returns(Task.CompletedTask);
 
-            // Mapeamento manual de FundoDTO para Fundo
             var fundoCriado = new Fundo
             {
                 Codigo = fundoDto.Codigo,
@@ -143,7 +139,7 @@ namespace CaseItau.API.Tests.ControllersTests
             var fundoExistente = new Fundo { Codigo = "001", Nome = "Fundo Existente", Cnpj = "12345678901234", Codigo_Tipo = 1, Patrimonio = 1000 };
 
             _fundoRepositoryMock.Setup(repo => repo.GetByCodigoAsync(fundoDto.Codigo)).ReturnsAsync(fundoExistente);
-            _mapperMock.Setup(m => m.Map<Fundo>(fundoDto)).Returns(fundoExistente); // Mapeamento simulado
+            _mapperMock.Setup(m => m.Map<Fundo>(fundoDto)).Returns(fundoExistente);
 
             // Act
             var result = await _fundoController.Post(fundoDto);

@@ -82,7 +82,6 @@ namespace CaseItau.API.Tests.UseCasesTests
             _fundoRepositoryMock.Setup(repo => repo.GetByCodigoAsync(fundoDto.Codigo)).ReturnsAsync((Fundo)null);
             _fundoRepositoryMock.Setup(repo => repo.CreateFundoAsync(It.IsAny<Fundo>())).Returns(Task.CompletedTask);
 
-            // Mapeamento simulado
             _mapperMock.Setup(m => m.Map<Fundo>(fundoDto)).Returns(fundoCriado);
             _mapperMock.Setup(m => m.Map<FundoDTO>(fundoCriado)).Returns(fundoDto);
 
@@ -120,7 +119,6 @@ namespace CaseItau.API.Tests.UseCasesTests
 
             _fundoRepositoryMock.Setup(repo => repo.GetByCodigoAsync(fundoExistente.Codigo)).ReturnsAsync(fundoExistente);
 
-            // Mapeamento manual de FundoDTO para Fundo
             var fundoAtualizado = new Fundo
             {
                 Codigo = fundoAtualizadoDto.Codigo,
