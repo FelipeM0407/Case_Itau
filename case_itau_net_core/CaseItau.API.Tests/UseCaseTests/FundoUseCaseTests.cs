@@ -1,23 +1,29 @@
+using AutoMapper;
 using Moq;
 using Xunit;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
 using CaseItau.API.src.Application.UseCases;
 using CaseItau.API.src.Domain.Interfaces;
 using CaseItau.API.src.Domain.Entities;
-using CaseItau.API.src.Domain.DTOs;
+using CaseItau.API.src.Application.DTOs;
 
 namespace CaseItau.API.Tests.UseCasesTests
 {
     public class FundoUseCaseTests
     {
         private readonly Mock<IFundoRepository> _fundoRepositoryMock;
+        private readonly Mock<IMapper> _mapperMock;
+        private readonly Mock<ILogger<FundoUseCase>> _loggerMock;
         private readonly FundoUseCase _fundoUseCase;
 
         public FundoUseCaseTests()
         {
             _fundoRepositoryMock = new Mock<IFundoRepository>();
-            _fundoUseCase = new FundoUseCase(_fundoRepositoryMock.Object, null);  // O logger pode ser mockado também, se necessário
+            _mapperMock = new Mock<IMapper>();
+            _loggerMock = new Mock<ILogger<FundoUseCase>>();
+            _fundoUseCase = new FundoUseCase(_fundoRepositoryMock.Object, _mapperMock.Object, _loggerMock.Object);
         }
 
         [Fact]
@@ -30,13 +36,19 @@ namespace CaseItau.API.Tests.UseCasesTests
                 new Fundo { Codigo = "002", Nome = "Fundo 2", Cnpj = "56789012345678", Codigo_Tipo = 2, Patrimonio = 2000 }
             };
 
+                    var fundosDto = new List<FundoDTO>
+            {
+                new FundoDTO { Codigo = "001", Nome = "Fundo 1", Cnpj = "12345678901234", Codigo_Tipo = 1, Patrimonio = 1000 },
+                new FundoDTO { Codigo = "002", Nome = "Fundo 2", Cnpj = "56789012345678", Codigo_Tipo = 2, Patrimonio = 2000 }
+            };
+
             _fundoRepositoryMock.Setup(repo => repo.GetAllAsync()).ReturnsAsync(fundos);
+            _mapperMock.Setup(m => m.Map<IEnumerable<FundoDTO>>(fundos)).Returns(fundosDto);
 
             // Act
             var result = await _fundoUseCase.GetAllFundosAsync();
 
             // Assert
-            Assert.NotNull(result);
             Assert.Equal(2, result.Count());
         }
 
@@ -48,6 +60,7 @@ namespace CaseItau.API.Tests.UseCasesTests
             var fundoExistente = new Fundo { Codigo = "001", Nome = "Fundo Existente", Cnpj = "12345678901234", Codigo_Tipo = 1, Patrimonio = 1000 };
 
             _fundoRepositoryMock.Setup(repo => repo.GetByCodigoAsync(fundoDto.Codigo)).ReturnsAsync(fundoExistente);
+            _mapperMock.Setup(m => m.Map<Fundo>(fundoDto)).Returns(fundoExistente);
 
             // Act
             var result = await _fundoUseCase.CreateFundoAsync(fundoDto);
@@ -64,8 +77,14 @@ namespace CaseItau.API.Tests.UseCasesTests
         {
             // Arrange
             var fundoDto = new FundoDTO { Codigo = "003", Nome = "Novo Fundo", Cnpj = "98765432109876", Codigo_Tipo = 1, Patrimonio = 5000 };
+            var fundoCriado = new Fundo { Codigo = "003", Nome = "Novo Fundo", Cnpj = "98765432109876", Codigo_Tipo = 1, Patrimonio = 5000 };
 
             _fundoRepositoryMock.Setup(repo => repo.GetByCodigoAsync(fundoDto.Codigo)).ReturnsAsync((Fundo)null);
+            _fundoRepositoryMock.Setup(repo => repo.CreateFundoAsync(It.IsAny<Fundo>())).Returns(Task.CompletedTask);
+
+            // Mapeamento simulado
+            _mapperMock.Setup(m => m.Map<Fundo>(fundoDto)).Returns(fundoCriado);
+            _mapperMock.Setup(m => m.Map<FundoDTO>(fundoCriado)).Returns(fundoDto);
 
             // Act
             var result = await _fundoUseCase.CreateFundoAsync(fundoDto);
@@ -101,6 +120,18 @@ namespace CaseItau.API.Tests.UseCasesTests
 
             _fundoRepositoryMock.Setup(repo => repo.GetByCodigoAsync(fundoExistente.Codigo)).ReturnsAsync(fundoExistente);
 
+            // Mapeamento manual de FundoDTO para Fundo
+            var fundoAtualizado = new Fundo
+            {
+                Codigo = fundoAtualizadoDto.Codigo,
+                Nome = fundoAtualizadoDto.Nome,
+                Cnpj = fundoAtualizadoDto.Cnpj,
+                Codigo_Tipo = fundoAtualizadoDto.Codigo_Tipo,
+                Patrimonio = fundoAtualizadoDto.Patrimonio ?? 0
+            };
+
+            _fundoRepositoryMock.Setup(repo => repo.UpdateFundoAsync(fundoAtualizadoDto.Codigo, fundoAtualizado)).Returns(Task.CompletedTask);
+
             // Act
             var result = await _fundoUseCase.UpdateFundoAsync(fundoAtualizadoDto.Codigo, fundoAtualizadoDto);
 
@@ -130,6 +161,8 @@ namespace CaseItau.API.Tests.UseCasesTests
             var fundoExistente = new Fundo { Codigo = "006", Nome = "Fundo a Ser Deletado", Cnpj = "12345678901234", Codigo_Tipo = 1, Patrimonio = 1500 };
 
             _fundoRepositoryMock.Setup(repo => repo.GetByCodigoAsync(fundoExistente.Codigo)).ReturnsAsync(fundoExistente);
+
+            _fundoRepositoryMock.Setup(repo => repo.DeleteFundoAsync(fundoExistente.Codigo)).Returns(Task.CompletedTask);
 
             // Act
             var result = await _fundoUseCase.DeleteFundoAsync(fundoExistente.Codigo);
@@ -162,6 +195,8 @@ namespace CaseItau.API.Tests.UseCasesTests
             var valorMovimentacao = 500m;
 
             _fundoRepositoryMock.Setup(repo => repo.GetByCodigoAsync(fundoExistente.Codigo)).ReturnsAsync(fundoExistente);
+
+            _fundoRepositoryMock.Setup(repo => repo.MovimentarPatrimonioAsync(fundoExistente.Codigo, valorMovimentacao)).Returns(Task.CompletedTask);
 
             // Act
             var result = await _fundoUseCase.MovimentarPatrimonioAsync(fundoExistente.Codigo, valorMovimentacao);

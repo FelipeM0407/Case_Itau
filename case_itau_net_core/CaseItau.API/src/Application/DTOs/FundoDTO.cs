@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace CaseItau.API.src.Domain.DTOs
+namespace CaseItau.API.src.Application.DTOs
 {
     public class FundoDTO
     {

@@ -1,5 +1,5 @@
 using AutoMapper;
-using CaseItau.API.src.Domain.DTOs;
+using CaseItau.API.src.Application.DTOs;
 using CaseItau.API.src.Domain.Entities;
 
 namespace CaseItau.API.src.Application.Mappings

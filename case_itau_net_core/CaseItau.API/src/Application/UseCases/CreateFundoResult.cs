@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using CaseItau.API.src.Domain.DTOs;
+using CaseItau.API.src.Application.DTOs;
 
 namespace CaseItau.API.src.Application.UseCases
 {

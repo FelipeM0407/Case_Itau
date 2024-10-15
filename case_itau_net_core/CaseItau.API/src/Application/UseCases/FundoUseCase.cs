@@ -1,7 +1,7 @@
 using AutoMapper;
 using CaseItau.API.src.Domain.Entities;
 using CaseItau.API.src.Domain.Interfaces;
-using CaseItau.API.src.Domain.DTOs;
+using CaseItau.API.src.Application.DTOs;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Threading.Tasks;

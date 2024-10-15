@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using CaseItau.API.src.Domain.DTOs;
+using CaseItau.API.src.Application.DTOs;
 using CaseItau.API.src.Application.UseCases;
 using Microsoft.AspNetCore.Mvc;
 
