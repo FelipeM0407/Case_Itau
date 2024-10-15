@@ -1,0 +1,153 @@
+<div class="container p-5" *ngIf="visibilityTable">
+    <div class="border boder-light rounded p-5">
+        <div>
+            <button type="button" class="btn btn-sm btn-secondary" (click)="ShowFormRegister()">
+                Novo Fundo
+            </button>
+        </div>
+
+
+        <hr />
+
+        <table class="table table-striped table-hover table-sm shadow-custom" *ngIf="fundos">
+            <thead class="thead-light">
+              <tr>
+                <th>Código</th>
+                <th>Nome</th>
+                <th>CNPJ</th>
+                <th>Tipo</th>
+                <th>Valor Patrimonio</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+          
+            <tbody>
+              <tr *ngFor="let fundo of fundos" class="fundo-row">
+                <td>{{ fundo.codigo }}</td>
+                <td>{{ fundo.nome }}</td>
+                <td>{{ fundo.cnpj }}</td>
+                <td>{{ tipoFundoDict[fundo.codigo_Tipo] }}</td>
+                <td>
+                  {{ fundo.patrimonio }}
+                  <span class="add-patrimonio-icon" (click)="MostrarModalAdicaoPatrimonio(fundo.codigo, fundo.nome, contentModalPatrimonio)" 
+                    title="Adicionar Patrimônio">
+                    <i class="fas fa-plus-circle"></i>
+                  </span>
+                </td>
+                <td>
+                  <button type="button" class="btn btn-sm btn-primary btn-icon" 
+                    (click)="fundo.codigo ? MostrarFormularioAtualizacao(fundo.codigo) : null" title="Atualizar">
+                    <i class="fas fa-sync-alt"></i>
+                  </button>&nbsp;&nbsp;
+          
+                  <button type="button" class="btn btn-sm btn-outline-danger btn-icon" 
+                    (click)="MostrarConfirmacaoExclusao(fundo.codigo, fundo.nome, contentModal)" title="Deletar">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          
+          
+          
+    </div>
+</div>
+
+
+<div class="container p-5" *ngIf="visibilityForm">
+    <div class="row">
+        <div class="col-6 border border-light rounded p-5 shadow" *ngIf="form">
+            <h6>{{ titleForm }}</h6>
+            <hr />
+
+            <form [formGroup]="form" (ngSubmit)="SendForm()">
+                <div class="form-group">
+                    <label>Código Fundo</label>
+                    <input type="text" class="form-control form-control-sm" formControlName="codigo" />
+                </div>
+
+                <div class="form-group">
+                    <label>Nome</label>
+                    <input type="text" maxlength="100" class="form-control form-control-sm" formControlName="nome" />
+                </div>
+
+                <div class="form-group">
+                    <label>CNPJ</label>
+                    <input type="text" maxlength="14" class="form-control form-control-sm" formControlName="cnpj" (keypress)="validateNumber($event)"/>
+                </div>
+
+                <div class="form-group">
+                    <label for="tipoFundo">Tipo de Fundo</label>
+                    <select class="form-control form-control-sm" formControlName="codigo_Tipo">
+                        <option *ngFor="let key of tipoFundoKeys" [ngValue]="key">
+                          {{ tipoFundoDict[key] }}
+                        </option>
+                      </select>
+                </div>
+
+
+                <div class="form-group">
+                    <label>Adicionar Patrimonio</label>
+                    <input type="number" class="form-control form-control-sm" formControlName="patrimonio" />
+                </div>
+
+                <div class="mt-2 d-flex justify-content-start">
+                    <button type="submit" class="btn btn-sm btn-outline-secondary mr-2">
+                        Salvar
+                    </button>
+                    <button type="button" class="btn btn-sm btn-light" (click)="Back()">Voltar</button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+<ng-template #contentModal>
+    <div class="modal-header">
+        <h4 class="modal-title pull-left">Confirmação da remoção</h4>
+        <button type="button" class="btn-close close pull-right" aria-label="Close" (click)="modalRef?.hide()">
+            <span aria-hidden="true" class="visually-hidden">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        Proceder com remoção de '{{fundoNome}}' ?
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-light" (click)="modalRef?.hide()">Não</button>
+        <button type="button" class="btn btn-outline-danger" (click)="DeleteFundo(fundoCodigo)">Sim</button>
+    </div>
+
+</ng-template>
+
+
+<ng-template #contentModalPatrimonio>
+    <div class="modal-header">
+        <h4 class="modal-title pull-left">Adição de Patrimonio</h4>
+        <button type="button" class="btn-close close pull-right" aria-label="Close" (click)="modalRef?.hide()">
+            <span aria-hidden="true" class="visually-hidden">&times;</span>
+        </button>
+    </div>
+    <form [formGroup]="form" (ngSubmit)="SendNovoPatrimonio()">
+        <div class="modal-body">
+            <div class="form-group">
+                <label>Adicionar Patrimonio em '{{fundoNome}}'</label>
+                <input type="number" class="form-control form-control-sm" formControlName="patrimonio" />
+            </div>
+        </div>
+        
+        <div class="modal-footer">
+            <div class="mt-2 d-flex justify-content-start">
+                <button type="submit" class="btn btn-sm btn-outline-secondary mr-2">
+                    Salvar
+                </button>
+                <button type="button" class="btn btn-sm btn-light" (click)="modalRefPatrimonio?.hide()">Voltar</button>
+            </div>
+        </div>
+    </form>
+
+</ng-template>

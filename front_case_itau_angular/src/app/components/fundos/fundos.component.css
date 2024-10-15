@@ -1,0 +1,48 @@
+.add-patrimonio-icon {
+    margin-left: 8px;
+    cursor: pointer;
+    color: #28a745;
+}
+
+.add-patrimonio-icon:hover {
+    color: #218838;
+}
+
+.shadow-custom {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.fundo-row:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.fundo-row:hover {
+    background-color: #f1f1f1;
+    transition: background-color 0.3s ease;
+}
+
+.add-patrimonio-icon {
+    margin-left: 8px;
+    cursor: pointer;
+    color: #28a745;
+}
+
+.add-patrimonio-icon:hover {
+    color: #218838;
+}
+
+.btn-icon {
+    padding: 0.25rem 0.5rem;
+    font-size: 1.2rem;
+}
+
+.btn-icon i {
+    vertical-align: middle;
+}
+
+.btn-primary.btn-icon {
+    background-color: #007bff;
+    border-color: #007bff;
+}
